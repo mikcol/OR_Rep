@@ -1,0 +1,14 @@
+
+
+
+
+
+.build/mega2560/src/i2c_scanner.cpp : src/i2c_scanner.ino
+	@mkdir -p .build/mega2560/src
+	@echo [93msrc/i2c_scanner.ino[0m
+	@/usr/local/bin/ino preproc  -o $@ $^
+
+
+all : .build/mega2560/src/i2c_scanner.cpp
+	@true
+
