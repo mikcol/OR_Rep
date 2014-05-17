@@ -49,6 +49,8 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
     Imu6.msg
     Thruster.msg
+    NavData.msg
+    Commands.msg
 #   Message1.msg
 #   Message2.msg
  )
