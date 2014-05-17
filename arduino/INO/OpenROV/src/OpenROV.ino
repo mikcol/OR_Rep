@@ -1,7 +1,7 @@
 #include <ros.h>
 #include <std_msgs/Int16.h>
-#include <arduino_msgs/Thruster.h>
-#include <arduino_msgs/Imu6.h>
+#include <arduino_msgs/Commands.h>
+#include <arduino_msgs/NavData.h>
 #include <Wire.h>
 #include <MPU6050.h>
 #include "Thruster.h"
@@ -27,7 +27,12 @@ void timer1_init(){
 }
 /*Function to Update commands from ROV*/
 void updateCommands(const arduino_msgs::Commands& cmd_msg){
-	//Update Motor Setpoints
+	if(cmd_msg.run == 0){
+		thrust.stop();
+	}
+	else{
+		thrust.setValues(cmd_msg.vert,cmd_msg.port_h,cmd_msg.star_h);
+	}
 	//Update Cameramount
 	//Update Laser setpoint
 	//Update Lighting
@@ -35,6 +40,13 @@ void updateCommands(const arduino_msgs::Commands& cmd_msg){
 /*Function to update Navigation Message*/
 void updateNavData(){
 	//Update IMU
+	accelgyro.getMotion6(&ax,&ay,&az,&gx,&gy,&gz);
+	navdat.ax = ax;
+	navdat.ay = ay;
+	navdat.az = az;
+	navdat.gx = gx;
+	navdat.gy = gy;
+	navdat.gz = gz;
 	//Update Temp
 	//Update Depth
 	//Update Humidity
@@ -43,8 +55,8 @@ ISR(TIMER1_OVF_vect){
 	status = 1;
 	TCNT1 = 64286;
 }
-ros::Publisher imu_pub("imu",&imu);
-ros::Subscriber<arduino_msgs::Thruster> thrust_sub("thruster", thrust_cb);
+ros::Publisher nav_pub("navdat",&navdat);
+ros::Subscriber<arduino_msgs::Commands> command_sub("commands", updateCommands);
 
 void setup()
 {
@@ -52,26 +64,21 @@ void setup()
 	accelgyro.initialize();
 	thrust.Init();
 	noInterrupts();
-	thruster_init();
 	timer1_init();	
 	nh.initNode();
-	imu.header.frame_id = "/imu";
-	nh.subscribe(thrust_sub);
-	nh.advertise(imu_pub);
+	navdat.header.frame_id = "/navdata";
+	nh.subscribe(command_sub);
+	nh.advertise(nav_pub);
 	interrupts();
 }
 
 void loop()
 {
 	if(status == 1){
-		accelgyro.getMotion6(&ax,&ay,&az,&gx,&gy,&gz);
-		imu.ax = ax;
-		imu.ay = ay;
-		imu.az = az;
-		imu.gx = gx;
-		imu.gy = gy;
-		imu.gz = gz;
-		imu_pub.publish(&imu);
+		//Update Navigation message
+		updateNavData();
+		//Publish the navigation data
+		nav_pub.publish(&navdat);
 		nh.spinOnce();
 		status = 0;
 	}

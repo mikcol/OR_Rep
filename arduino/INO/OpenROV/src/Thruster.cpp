@@ -1,21 +1,29 @@
 #include "Thruster.h"
-void Thruster::setValues(uint16_t vertical, uint16_t portside, uint16_t starboard){
-	OCR4A = cmd_msg.port_h;	
-	OCR4B = cmd_msg.star_h;	
-	OCR4C = cmd_msg.vert;	
+
+Thruster::Thruster(){
+
+}
+int Thruster::setValues(uint16_t vertical, uint16_t portside, uint16_t starboard)
+{
+	OCR4A = vertical;	
+	OCR4B = portside;	
+	OCR4C = starboard;	
+return 0;
 }
 
-void Thruster::timerStop(){
+int Thruster::timerStop()
+{
 
 	TCCR4B &= 0xF8;
-
+return 0;
 }
-void Thruster::timerStart(){
+int Thruster::timerStart()
+{
 
 	TCCR4B |= (1<<CS41);
-
+return 0;
 }
-void Thruster::Init(){
+int Thruster::Init(){
 /*Thrusters use timer 4 to obtain a 50 Hz PWM signal*/
 	TCCR4A = 0;
 	TCCR4B = 0;
@@ -31,4 +39,5 @@ void Thruster::Init(){
 	OCR4A = 1500;
 	OCR4B = 1500;
 	OCR4C = 1500;
+return 0;
 }
