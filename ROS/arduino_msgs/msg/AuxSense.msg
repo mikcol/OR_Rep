@@ -1,4 +1,4 @@
 Header header
-float32 temperature
-float32 batt
-float32 humidity
+int16 temperature
+int16 batt
+int16 humidity
