@@ -1,6 +1,5 @@
 Header header
-uint16 port_h
-uint16 star_h
-uint16 vert
-bool run
-bool laser
+bool LASER_on
+uint8 LED_intensity
+bool LED_on
+

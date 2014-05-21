@@ -3,10 +3,16 @@
 class Thruster {
 public:
 Thruster();
-int Init();
+int initialize();
+int update(uint16_t vertical,uint16_t portside,uint16_t starboard,bool run);
+private:
 int setValues(uint16_t vertical,uint16_t portside,uint16_t starboard);
 int timerStop();
 int timerStart();
+int stop();
+int start();
+
+bool power;
 
 };
 
